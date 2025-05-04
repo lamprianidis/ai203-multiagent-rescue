@@ -2,13 +2,16 @@ package environment;
 
 import java.util.HashMap;
 import java.util.Map;
+import agents.EvacueeAgent;
 
 public class GridEnvironment {
     private final int width;
     private final int height;
     private final Cell[][] grid;
+
     private final Map<String, int[]> agentPositions = new HashMap<>();
     private final Map<Integer, int[]> exitPositions = new HashMap<>();
+    private final Map<String, agents.EvacueeAgent.Type> agentTypes = new HashMap<>();
 
     public GridEnvironment(int width, int height) {
         this.width = width;
@@ -34,16 +37,19 @@ public class GridEnvironment {
         exitPositions.put(exitId, new int[]{x, y});
     }
 
-    public synchronized void addAgent(String agentId, int x, int y) {
-        agentPositions.put(agentId, new int[]{x, y});
+    public synchronized void addAgent(String agentId,
+                                      agents.EvacueeAgent.Type type,
+                                      int x, int y) {
+        agentPositions.put(agentId, new int[]{x,y});
+        agentTypes.put(agentId, type);
     }
 
     public synchronized void removeAgent(String agentId) {
         agentPositions.remove(agentId);
+        agentTypes.remove(agentId);
     }
 
-    public synchronized boolean tryMoveAgent(String agentId,
-                                             int toX, int toY) {
+    public synchronized boolean tryMoveAgent(String agentId, int toX, int toY) {
         Cell target = grid[toX][toY];
         if (target.isBlocked()) {
             return false;
@@ -51,12 +57,17 @@ public class GridEnvironment {
         agentPositions.put(agentId, new int[]{toX, toY});
         if (target.getType() == Cell.CellType.EXIT) {
             agentPositions.remove(agentId);
+            agentTypes.remove(agentId);
         }
         return true;
     }
 
     public synchronized Map<String, int[]> getAllAgentPositions() {
         return new HashMap<>(agentPositions);
+    }
+
+    public synchronized EvacueeAgent.Type getAgentType(String agentId) {
+        return agentTypes.getOrDefault(agentId, EvacueeAgent.Type.CALM);
     }
 
     public synchronized Cell getCell(int x, int y) {
@@ -69,5 +80,40 @@ public class GridEnvironment {
 
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * Computes the minimum number of steps from each cell to the nearest exit.
+     * Returns a 2D array dist[x][y] = distance in steps to the closest exit.
+     */
+    public synchronized int[][] computeDistanceToExits() {
+        int[][] dist = new int[width][height];
+        // initialize distances to "infinite"
+        for (int i = 0; i < width; i++) {
+            java.util.Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        // BFS queue with all exits at distance 0
+        java.util.Deque<int[]> queue = new java.util.ArrayDeque<>();
+        for (int[] e : exitPositions.values()) {
+            int ex = e[0], ey = e[1];
+            dist[ex][ey] = 0;
+            queue.addLast(new int[]{ex, ey});
+        }
+        // explore in four directions
+        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+        while (!queue.isEmpty()) {
+            int[] p = queue.removeFirst();
+            int cx = p[0], cy = p[1], cd = dist[cx][cy];
+            for (int[] d : dirs) {
+                int nx = cx + d[0], ny = cy + d[1];
+                if (nx >= 0 && ny >= 0 && nx < width && ny < height
+                        && !grid[nx][ny].isBlocked()
+                        && dist[nx][ny] > cd + 1) {
+                    dist[nx][ny] = cd + 1;
+                    queue.addLast(new int[]{nx, ny});
+                }
+            }
+        }
+        return dist;
     }
 }
