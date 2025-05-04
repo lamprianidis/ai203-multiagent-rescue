@@ -25,21 +25,53 @@ public class Main {
         Random random = new Random();
         int width = env.getWidth();
         int height = env.getHeight();
+
+        for (int i = 0; i < 110; i++) {
+            int x, y;
+            do {
+                x = random.nextInt(width);
+                y = random.nextInt(height);
+            } while (env.getCell(x, y).isBlocked() ||
+                    env.getCell(x, y).getType() == Cell.CellType.EXIT);
+
+            AgentController ac = container.createNewAgent(
+                    "Calm" + i,
+                    "agents.CalmEvacueeAgent",
+                    new Object[]{x, y}
+            );
+            ac.start();
+        }
+
         for (int i = 0; i < 20; i++) {
             int x, y;
             do {
                 x = random.nextInt(width);
                 y = random.nextInt(height);
-            } while (env.getCell(x, y).isBlocked()
-                    || env.getCell(x, y).getType() == Cell.CellType.EXIT);
+            } while (env.getCell(x, y).isBlocked() ||
+                    env.getCell(x, y).getType() == Cell.CellType.EXIT);
 
-            String agentName = "Agent" + i;
-            AgentController agent = container.createNewAgent(
-                    agentName,
-                    "agents.RandomEvacueeAgent",
+            AgentController ac = container.createNewAgent(
+                    "Panicked" + i,
+                    "agents.PanickedEvacueeAgent",
                     new Object[]{x, y}
             );
-            agent.start();
+            ac.start();
+        }
+
+        for (int i = 0; i < 10; i++) {
+            int x, y;
+            do {
+                x = random.nextInt(width);
+                y = random.nextInt(height);
+            } while (env.getCell(x, y).isBlocked() ||
+                    env.getCell(x, y).getType() == Cell.CellType.EXIT);
+
+            AgentController ac = container.createNewAgent(
+                    "Injured" + i,
+                    "agents.InjuredEvacueeAgent",
+                    new Object[]{x, y}
+            );
+            ac.start();
         }
 
         SimulationView.setEnvironment(env);
