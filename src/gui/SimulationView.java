@@ -67,11 +67,19 @@ public class SimulationView extends Application {
         double cellWidth = canvas.getWidth() / width;
         double cellHeight = canvas.getHeight() / height;
 
-        gc.setFill(Color.RED);
-        for (int[] pos : env.getAllAgentPositions().values()) {
-            double centerX = pos[0] * cellWidth + cellWidth * 0.25;
-            double centerY = pos[1] * cellHeight + cellHeight * 0.25;
-            gc.fillOval(centerX, centerY, cellWidth * 0.5, cellHeight * 0.5);
+        for (var entry : env.getAllAgentPositions().entrySet()) {
+            String id = entry.getKey();
+            int[]  pos = entry.getValue();
+
+            switch (env.getAgentType(id)) {
+                case CALM -> gc.setFill(Color.BLUE);
+                case PANICKED -> gc.setFill(Color.ORANGE);
+                case INJURED -> gc.setFill(Color.RED);
+            }
+
+            double cx = pos[0]*cellWidth + cellWidth*0.25;
+            double cy = pos[1]*cellHeight + cellHeight*0.25;
+            gc.fillOval(cx, cy, cellWidth*0.5, cellHeight*0.5);
         }
     }
 }
