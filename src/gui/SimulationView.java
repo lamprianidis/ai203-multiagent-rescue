@@ -21,7 +21,7 @@ public class SimulationView extends Application {
 
     @Override
     public void start(Stage stage) {
-        canvas = new Canvas(800, 600);
+        canvas = new Canvas(1200, 900);
         StackPane root = new StackPane(canvas);
         stage.setScene(new Scene(root));
         stage.setTitle("Evacuation Simulation");
