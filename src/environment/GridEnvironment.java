@@ -12,6 +12,7 @@ public class GridEnvironment {
     private final Map<String, int[]> agentPositions = new HashMap<>();
     private final Map<Integer, int[]> exitPositions = new HashMap<>();
     private final Map<String, agents.EvacueeAgent.Type> agentTypes = new HashMap<>();
+    private final Map<agents.EvacueeAgent.Type, Integer> evacuatedCounts = new HashMap<>();
 
     public GridEnvironment(int width, int height) {
         this.width = width;
@@ -56,10 +57,15 @@ public class GridEnvironment {
         }
         agentPositions.put(agentId, new int[]{toX, toY});
         if (target.getType() == Cell.CellType.EXIT) {
+            agents.EvacueeAgent.Type type = agentTypes.remove(agentId);
             agentPositions.remove(agentId);
-            agentTypes.remove(agentId);
+            evacuatedCounts.merge(type, 1, Integer::sum);
         }
         return true;
+    }
+
+    public synchronized int getEvacuatedCount(agents.EvacueeAgent.Type type) {
+        return evacuatedCounts.getOrDefault(type, 0);
     }
 
     public synchronized Map<String, int[]> getAllAgentPositions() {
