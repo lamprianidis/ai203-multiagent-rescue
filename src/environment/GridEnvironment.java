@@ -53,8 +53,18 @@ public class GridEnvironment {
 
     public synchronized boolean tryMoveAgent(String agentId, int toX, int toY) {
         Cell target = grid[toX][toY];
+        // Check for blocked cells
         if (target.isBlocked()) {
             return false;
+        }
+        // Check for agent in the cell
+        for (Map.Entry<String, int[]> entry : agentPositions.entrySet()) {
+            String otherId = entry.getKey();
+            if (otherId.equals(agentId)) continue; // ignore self Id
+            int[] pos = entry.getValue();
+            if (pos[0] == toX && pos[1] == toY) {
+                return false;
+            }
         }
         agentPositions.put(agentId, new int[]{toX, toY});
         if (target.getType() == Cell.CellType.EXIT) {
