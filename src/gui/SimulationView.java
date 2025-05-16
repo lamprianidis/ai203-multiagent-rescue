@@ -91,6 +91,23 @@ public class SimulationView extends Application {
             String id = entry.getKey();
             int[]  pos = entry.getValue();
 
+            // Draw firefighters
+            if (id.startsWith("Firefighter")) {
+                gc.setFill(Color.GOLD);
+                double[] xPoints = {
+                        pos[0]*cellWidth + cellWidth*0.5,
+                        pos[0]*cellWidth + cellWidth*0.25,
+                        pos[0]*cellWidth + cellWidth*0.75
+                };
+                double[] yPoints = {
+                        pos[1]*cellHeight + cellHeight*0.25,
+                        pos[1]*cellHeight + cellHeight*0.75,
+                        pos[1]*cellHeight + cellHeight*0.75
+                };
+                gc.fillPolygon(xPoints, yPoints, 3);
+                continue;
+            }
+
             // Draw Evacuees and fires
             EvacueeAgent.Type type = env.getAgentType(id);
             if (type == null) {
