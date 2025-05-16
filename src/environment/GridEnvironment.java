@@ -51,6 +51,15 @@ public class GridEnvironment {
         agentTypes.remove(agentId);
     }
 
+    // Update type of evacuee to null
+    public synchronized void updateAgentType(String agentId, EvacueeAgent.Type type) {
+        if (type == null) {
+            agentTypes.remove(agentId);
+        } else {
+            agentTypes.put(agentId, type);
+        }
+    }
+
     public synchronized boolean tryMoveAgent(String agentId, int toX, int toY) {
         Cell target = grid[toX][toY];
         // Check for blocked cells

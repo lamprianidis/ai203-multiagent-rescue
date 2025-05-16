@@ -91,9 +91,14 @@ public class SimulationView extends Application {
             String id = entry.getKey();
             int[]  pos = entry.getValue();
 
+            // Draw Evacuees and fires
             EvacueeAgent.Type type = env.getAgentType(id);
             if (type == null) {
-                gc.setFill(Color.DARKRED);
+                if (id.startsWith("Evacuee") || id.startsWith("Calm") || id.startsWith("Panicked") || id.startsWith("Injured")) {
+                    gc.setFill(Color.BLACK); // Dead
+                } else {
+                    gc.setFill(Color.DARKRED); // Fireplace
+                }
             } else {
                 switch (type) {
                     case CALM -> gc.setFill(Color.BLUE);

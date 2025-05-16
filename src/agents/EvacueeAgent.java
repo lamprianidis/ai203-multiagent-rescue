@@ -14,6 +14,12 @@ public abstract class EvacueeAgent extends Agent {
     protected GridEnvironment env;
     protected int x, y;
 
+    // Parameters for dead evacuees
+    protected boolean dead = false;
+    protected long timeInFire = 0;
+    protected static final long DEATH_THRESHOLD_MS = 2000;
+    protected static final java.util.concurrent.atomic.AtomicInteger deathCount = new java.util.concurrent.atomic.AtomicInteger(0);
+
     protected abstract Type getType();
     protected abstract long getInterval();
     protected abstract void move();
@@ -60,5 +66,11 @@ public abstract class EvacueeAgent extends Agent {
             }
         }
         return moves;
+    }
+
+    // Summary of total deaths
+    // TODO: Add a live counter on UI
+    public static int getTotalDeaths() {
+        return deathCount.get();
     }
 }
