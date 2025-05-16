@@ -41,7 +41,9 @@ public class GridEnvironment {
                                       agents.EvacueeAgent.Type type,
                                       int x, int y) {
         agentPositions.put(agentId, new int[]{x,y});
-        agentTypes.put(agentId, type);
+        if (type != null) {
+            agentTypes.put(agentId, type);
+        }
     }
 
     public synchronized void removeAgent(String agentId) {
@@ -67,7 +69,7 @@ public class GridEnvironment {
     }
 
     public synchronized EvacueeAgent.Type getAgentType(String agentId) {
-        return agentTypes.getOrDefault(agentId, EvacueeAgent.Type.CALM);
+        return agentTypes.get(agentId);
     }
 
     public synchronized Cell getCell(int x, int y) {

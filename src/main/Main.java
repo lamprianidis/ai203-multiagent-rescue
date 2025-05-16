@@ -74,6 +74,23 @@ public class Main {
             ac.start();
         }
 
+        // TODO: Change the static number of fires to dynamic input of user
+        for (int i = 0; i < 3; i++) {
+            int x, y;
+            do {
+                x = random.nextInt(width);
+                y = random.nextInt(height);
+            } while (env.getCell(x, y).isBlocked() ||
+                    env.getCell(x, y).getType() == Cell.CellType.EXIT);
+
+            AgentController fire = container.createNewAgent(
+                    "Fireplace" + i,
+                    "agents.FireplaceAgent",
+                    new Object[]{x, y, 4}
+            );
+            fire.start();
+        }
+
         SimulationView.setEnvironment(env);
         Application.launch(SimulationView.class, args);
     }
