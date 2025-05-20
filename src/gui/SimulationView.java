@@ -1,5 +1,6 @@
 package gui;
 
+import agents.EvacueeAgent;
 import environment.Cell;
 import environment.GridEnvironment;
 import javafx.animation.AnimationTimer;
@@ -14,6 +15,8 @@ import javafx.stage.Stage;
 public class SimulationView extends Application {
     private static GridEnvironment env;
     private Canvas canvas;
+    private long simulationStartTime;
+    private static final long maxDuration = 30_000; // 30 sec
 
     public static void setEnvironment(GridEnvironment environment) {
         env = environment;
@@ -27,9 +30,26 @@ public class SimulationView extends Application {
         stage.setTitle("Evacuation Simulation");
         stage.show();
 
+        simulationStartTime = System.currentTimeMillis();
+
         new AnimationTimer() {
             @Override
             public void handle(long now) {
+                long elapsed = System.currentTimeMillis() - simulationStartTime;
+                // Case 1: Simulation reached the maximum duration
+                if (elapsed >= maxDuration) {
+                    System.out.println("Simulation ended: time limit reached.");
+                    System.exit(0);
+                }
+
+                boolean anyFire = env.getAllAgentPositions().keySet().stream()
+                        .anyMatch(id -> id.startsWith("Fire"));
+                // No other fires exist
+                if (!anyFire) {
+                    System.out.println("Simulation ended: fire extinguished.");
+                    System.exit(0);
+                }
+
                 drawGrid();
                 drawAgents();
             }
@@ -71,10 +91,37 @@ public class SimulationView extends Application {
             String id = entry.getKey();
             int[]  pos = entry.getValue();
 
-            switch (env.getAgentType(id)) {
-                case CALM -> gc.setFill(Color.BLUE);
-                case PANICKED -> gc.setFill(Color.ORANGE);
-                case INJURED -> gc.setFill(Color.RED);
+            // Draw firefighters
+            if (id.startsWith("Firefighter")) {
+                gc.setFill(Color.GOLD);
+                double[] xPoints = {
+                        pos[0]*cellWidth + cellWidth*0.5,
+                        pos[0]*cellWidth + cellWidth*0.25,
+                        pos[0]*cellWidth + cellWidth*0.75
+                };
+                double[] yPoints = {
+                        pos[1]*cellHeight + cellHeight*0.25,
+                        pos[1]*cellHeight + cellHeight*0.75,
+                        pos[1]*cellHeight + cellHeight*0.75
+                };
+                gc.fillPolygon(xPoints, yPoints, 3);
+                continue;
+            }
+
+            // Draw Evacuees and fires
+            EvacueeAgent.Type type = env.getAgentType(id);
+            if (type == null) {
+                if (id.startsWith("Evacuee") || id.startsWith("Calm") || id.startsWith("Panicked") || id.startsWith("Injured")) {
+                    gc.setFill(Color.BLACK); // Dead
+                } else {
+                    gc.setFill(Color.DARKRED); // Fireplace
+                }
+            } else {
+                switch (type) {
+                    case CALM -> gc.setFill(Color.BLUE);
+                    case PANICKED -> gc.setFill(Color.ORANGE);
+                    case INJURED -> gc.setFill(Color.RED);
+                }
             }
 
             double cx = pos[0]*cellWidth + cellWidth*0.25;
