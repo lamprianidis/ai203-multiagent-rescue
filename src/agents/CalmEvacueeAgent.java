@@ -25,6 +25,22 @@ public class CalmEvacueeAgent extends EvacueeAgent {
 
     @Override
     protected void move() {
+        // Check for dead
+        if (dead) return;
+        Cell cell = env.getCell(x, y);
+        if (cell.getType() == Cell.CellType.OBSTACLE) {
+            timeInFire += getInterval();
+            if (timeInFire >= DEATH_THRESHOLD_MS) {
+                dead = true;
+                env.updateAgentType(agentId, null); // Convert type to null
+                deathCount.incrementAndGet();
+                System.out.println(agentId + " died at " + x + "," + y);
+                return;
+            }
+        } else {
+            timeInFire = 0;
+        }
+
         List<int[]> validMoves = getValidMoves();
         validMoves.stream()
                 .min(Comparator.comparingInt(p -> distMap[p[0]][p[1]]))

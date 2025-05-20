@@ -41,7 +41,9 @@ public class GridEnvironment {
                                       agents.EvacueeAgent.Type type,
                                       int x, int y) {
         agentPositions.put(agentId, new int[]{x,y});
-        agentTypes.put(agentId, type);
+        if (type != null) {
+            agentTypes.put(agentId, type);
+        }
     }
 
     public synchronized void removeAgent(String agentId) {
@@ -49,10 +51,29 @@ public class GridEnvironment {
         agentTypes.remove(agentId);
     }
 
+    // Update type of evacuee to null
+    public synchronized void updateAgentType(String agentId, EvacueeAgent.Type type) {
+        if (type == null) {
+            agentTypes.remove(agentId);
+        } else {
+            agentTypes.put(agentId, type);
+        }
+    }
+
     public synchronized boolean tryMoveAgent(String agentId, int toX, int toY) {
         Cell target = grid[toX][toY];
+        // Check for blocked cells
         if (target.isBlocked()) {
             return false;
+        }
+        // Check for agent in the cell
+        for (Map.Entry<String, int[]> entry : agentPositions.entrySet()) {
+            String otherId = entry.getKey();
+            if (otherId.equals(agentId)) continue; // ignore self Id
+            int[] pos = entry.getValue();
+            if (pos[0] == toX && pos[1] == toY) {
+                return false;
+            }
         }
         agentPositions.put(agentId, new int[]{toX, toY});
         if (target.getType() == Cell.CellType.EXIT) {
@@ -67,7 +88,7 @@ public class GridEnvironment {
     }
 
     public synchronized EvacueeAgent.Type getAgentType(String agentId) {
-        return agentTypes.getOrDefault(agentId, EvacueeAgent.Type.CALM);
+        return agentTypes.get(agentId);
     }
 
     public synchronized Cell getCell(int x, int y) {
