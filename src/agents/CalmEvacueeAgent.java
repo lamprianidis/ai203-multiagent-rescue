@@ -64,9 +64,6 @@ public class CalmEvacueeAgent extends EvacueeAgent {
                     if (env.getCell(newX, newY).getType() == Cell.CellType.EXIT) {
                         doDelete();
                     }
-
-                    prevX = x;
-                    prevY = y;
                 });
 
         // Fallback: agent moves to a neighbour valid cell if stacks
@@ -82,9 +79,6 @@ public class CalmEvacueeAgent extends EvacueeAgent {
             } else {
                 stuckCounter++;
             }
-
-            prevX = x;
-            prevY = y;
         }
     }
 }

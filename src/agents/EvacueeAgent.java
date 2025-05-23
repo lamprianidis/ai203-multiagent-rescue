@@ -25,8 +25,6 @@ public abstract class EvacueeAgent extends Agent {
     protected abstract void move();
 
     // Parameters for agent's movement
-    protected int prevX = -1;
-    protected int prevY = -1;
     protected int stuckCounter = 0;
     protected static final int MAX_STUCK_STEPS = 3;
 
