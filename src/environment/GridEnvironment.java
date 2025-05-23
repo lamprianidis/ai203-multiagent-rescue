@@ -122,14 +122,13 @@ public class GridEnvironment {
             int[] pos = entry.getValue();
             if (pos[0] == x && pos[1] == y) {
                 EvacueeAgent agent = agentInstances.get(id);
-                if (agent != null && !agent.hasMovedRecently()) {
+                if (agent != null && !agent.isStuck()) {
                     return true;
                 }
             }
         }
         return false;
     }
-
 
     /**
      * Computes the minimum number of steps from each cell to the nearest exit.

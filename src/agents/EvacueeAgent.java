@@ -28,7 +28,7 @@ public abstract class EvacueeAgent extends Agent {
     protected int stuckCounter = 0;
     protected static final int MAX_STUCK_STEPS = 3;
 
-    public boolean hasMovedRecently() {
+    public boolean isStuck() {
         return stuckCounter < MAX_STUCK_STEPS;
     }
 
