@@ -102,7 +102,7 @@ public class Main {
 
             AgentController ac = container.createNewAgent(
                     "Firefighter" + i,
-                    "agents.FirefighterAgent",
+                    "agents.FirefighterHelperAgent",
                     new Object[]{x, y}
             );
             ac.start();
