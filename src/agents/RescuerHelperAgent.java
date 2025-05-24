@@ -7,6 +7,7 @@ import java.util.Map;
 public class RescuerHelperAgent extends HelperAgent{
     private int[][] distMap;
     private long stopUntil = 0;
+    private String helpInjured = null;
 
     private boolean isNeighbor(int x1, int y1, int x2, int y2) {
         return Math.abs(x1 - x2) + Math.abs(y1 - y2) == 1;
@@ -64,6 +65,7 @@ public class RescuerHelperAgent extends HelperAgent{
             }
         }
 
+        // Freeze when Injured is reached
         for (Map.Entry<String, int[]> entry : env.getAllAgentPositions().entrySet()) {
             String otherId = entry.getKey();
             int[] pos = entry.getValue();
@@ -73,11 +75,32 @@ public class RescuerHelperAgent extends HelperAgent{
                     env.getAgentType(otherId) == EvacueeAgent.Type.INJURED) {
 
                 stopUntil = System.currentTimeMillis() + 2000;
+                helpInjured = otherId;
                 // TODO: This message should be printed in console
-                System.out.println(getLocalName() + " is helping injured evacuee" + env.getAgentType(otherId) + "for 2 seconds");
-                break;
+                System.out.println(getLocalName() + " is helping injured evacuee" + otherId + "for 2 seconds");
             }
         }
 
+        // Injured turns to Calm
+        if (helpInjured != null && System.currentTimeMillis() >= stopUntil) {
+            int[] pos2 = env.getAllAgentPositions().get(helpInjured);
+            if (pos2 != null) {
+                env.removeAgent(helpInjured);
+                // Replace Injured with Calm evacuee agent
+                String newId = "rescued_" + helpInjured;
+                try {
+                    jade.wrapper.AgentController calm = getContainerController().createNewAgent(
+                            newId,
+                            "agents.CalmEvacueeAgent",
+                            new Object[]{pos2[0], pos2[1]}
+                    );
+                    calm.start();
+                    distMap = env.computeDistanceToInjuredOrFire("injured"); // Recompute distances for next injured
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                helpInjured = null;
+            }
+        }
     }
 }
