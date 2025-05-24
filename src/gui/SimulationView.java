@@ -108,6 +108,21 @@ public class SimulationView extends Application {
                 continue;
             }
 
+            // Draw rescuers
+            if (id.startsWith("Rescuer")) {
+                gc.setFill(Color.GREEN);
+                double centerX = pos[0] * cellWidth + cellWidth * 0.5;
+                double centerY = pos[1] * cellHeight + cellHeight * 0.5;
+                double size = Math.min(cellWidth, cellHeight) * 0.3;
+                gc.setStroke(Color.GREEN);
+                gc.setLineWidth(2);
+                // Add horizontal line
+                gc.strokeLine(centerX - size, centerY, centerX + size, centerY);
+                // Add vertical line
+                gc.strokeLine(centerX, centerY - size, centerX, centerY + size);
+                continue;
+            }
+
             // Draw Evacuees and fires
             EvacueeAgent.Type type = env.getAgentType(id);
             if (type == null) {

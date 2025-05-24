@@ -108,6 +108,22 @@ public class Main {
             ac.start();
         }
 
+        // TODO: Change the static number of rescuers based on user's dynamic input
+        for (int i = 0; i < 2; i++) {
+            int x, y;
+            do {
+                x = random.nextInt(width);
+                y = random.nextInt(height);
+            } while (env.getCell(x, y).isBlocked());
+
+            AgentController ac = container.createNewAgent(
+                    "Rescuer" + i,
+                    "agents.RescuerHelperAgent",
+                    new Object[]{x, y}
+            );
+            ac.start();
+        }
+
         SimulationView.setEnvironment(env);
         Application.launch(SimulationView.class, args);
     }
