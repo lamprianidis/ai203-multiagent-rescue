@@ -82,6 +82,7 @@ public class GridEnvironment {
         // Check for agent in the cell
         for (Map.Entry<String, int[]> entry : agentPositions.entrySet()) {
             String otherId = entry.getKey();
+            if (otherId.startsWith("FireSensor")) continue;
             if (otherId.equals(agentId)) continue; // ignore self Id
             int[] pos = entry.getValue();
             if (pos[0] == toX && pos[1] == toY) {
