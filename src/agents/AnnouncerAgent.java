@@ -6,6 +6,7 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import environment.EnvironmentHolder;
 import environment.GridEnvironment;
+import agents.util.MessageLogger;
 
 public class AnnouncerAgent extends Agent {
     private static final String[] FIRE_ANNOUNCEMENT_TARGET_PREFIXES = {
@@ -50,5 +51,6 @@ public class AnnouncerAgent extends Agent {
             }
         }
         send(announcement);
+        MessageLogger.logMessage(announcement);
     }
 }

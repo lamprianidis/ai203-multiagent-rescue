@@ -7,6 +7,7 @@ import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import java.util.Map;
+import agents.util.MessageLogger;
 
 public class FireSensorAgent extends Agent {
     private String agentId;
@@ -56,6 +57,7 @@ public class FireSensorAgent extends Agent {
                 msg.addReceiver(new AID("AnnouncerAgent", AID.ISLOCALNAME));
                 msg.setContent("FIRE DETECTED at " + fireX + "," + fireY + "!");
                 send(msg);
+                MessageLogger.logMessage(msg);
                 break;
             }
         }
