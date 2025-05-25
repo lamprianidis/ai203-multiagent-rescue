@@ -108,6 +108,15 @@ public class SimulationView extends Application {
                 continue;
             }
 
+            // Draw fire sensors
+            if (id.startsWith("FireSensor")) {
+                gc.setFill(Color.HOTPINK);
+                double cx = pos[0]*cellWidth + cellWidth*0.25;
+                double cy = pos[1]*cellHeight + cellHeight*0.25;
+                gc.fillRect(cx, cy, cellWidth*0.4, cellWidth*0.4);
+                continue;
+            }
+
             // Draw Evacuees and fires
             EvacueeAgent.Type type = env.getAgentType(id);
             if (type == null) {
