@@ -41,6 +41,10 @@ public class CalmEvacueeAgent extends EvacueeAgent {
             timeInFire = 0;
         }
 
+        if (stuckCounter >= 2) {
+            distMap = env.computeDistanceToExits();
+        }
+
         List<int[]> validMoves = getValidMoves();
         validMoves.stream()
                 .min(Comparator.comparingInt(p -> distMap[p[0]][p[1]]))
@@ -48,14 +52,33 @@ public class CalmEvacueeAgent extends EvacueeAgent {
                     int newX = nextPos[0];
                     int newY = nextPos[1];
 
-                    if (env.tryMoveAgent(agentId, newX, newY)) {
+                    boolean moved = env.tryMoveAgent(agentId, newX, newY);
+                    if (moved) {
                         x = newX;
                         y = newY;
+                        stuckCounter = 0;
+                    } else {
+                        stuckCounter++;
                     }
 
                     if (env.getCell(newX, newY).getType() == Cell.CellType.EXIT) {
                         doDelete();
                     }
                 });
+
+        // Fallback: agent moves to a neighbour valid cell if stacks
+        if (stuckCounter >= 2 && !validMoves.isEmpty()) {
+            java.util.Collections.shuffle(validMoves);
+            int[] fallbackMove = validMoves.get(0);
+
+            boolean moved = env.tryMoveAgent(agentId, fallbackMove[0], fallbackMove[1]);
+            if (moved) {
+                x = fallbackMove[0];
+                y = fallbackMove[1];
+                stuckCounter = 0;
+            } else {
+                stuckCounter++;
+            }
+        }
     }
 }

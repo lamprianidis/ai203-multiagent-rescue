@@ -24,6 +24,14 @@ public abstract class EvacueeAgent extends Agent {
     protected abstract long getInterval();
     protected abstract void move();
 
+    // Parameters for agent's movement
+    protected int stuckCounter = 0;
+    protected static final int MAX_STUCK_STEPS = 3;
+
+    public boolean isStuck() {
+        return stuckCounter < MAX_STUCK_STEPS;
+    }
+
     @Override
     protected void setup() {
         env = EnvironmentHolder.getEnvironment();
@@ -32,7 +40,7 @@ public abstract class EvacueeAgent extends Agent {
         Object[] args = getArguments();
         x = (int) args[0];
         y = (int) args[1];
-        env.addAgent(agentId, getType(), x, y);
+        env.addAgent(agentId, getType(), x, y, this);
 
         addBehaviour(new TickerBehaviour(this, getInterval()) {
             @Override

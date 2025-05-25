@@ -10,6 +10,7 @@ import environment.GridEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class FireplaceAgent extends Agent {
     private String agentId;
@@ -60,7 +61,7 @@ public class FireplaceAgent extends Agent {
             int nx = next[0], ny = next[1];
 
             try {
-                String newId = "Fire" + System.currentTimeMillis();
+                String newId = "Fire" + UUID.randomUUID();
                 AgentController newFire = getContainerController().createNewAgent(
                         newId,
                         "agents.FireplaceAgent",

@@ -13,6 +13,7 @@ public class GridEnvironment {
     private final Map<Integer, int[]> exitPositions = new HashMap<>();
     private final Map<String, agents.EvacueeAgent.Type> agentTypes = new HashMap<>();
     private final Map<agents.EvacueeAgent.Type, Integer> evacuatedCounts = new HashMap<>();
+    private final Map<String, EvacueeAgent> agentInstances = new HashMap<>();
 
     public GridEnvironment(int width, int height) {
         this.width = width;
@@ -40,12 +41,24 @@ public class GridEnvironment {
 
     public synchronized void addAgent(String agentId,
                                       agents.EvacueeAgent.Type type,
-                                      int x, int y) {
+                                      int x, int y,
+                                      EvacueeAgent instance) {
         agentPositions.put(agentId, new int[]{x,y});
         if (type != null) {
             agentTypes.put(agentId, type);
         }
+        agentInstances.put(agentId, instance);
     }
+
+    public synchronized void addAgent(String agentId,
+                                      agents.EvacueeAgent.Type type,
+                                      int x, int y) {
+        agentPositions.put(agentId, new int[]{x, y});
+        if (type != null) {
+            agentTypes.put(agentId, type);
+        }
+    }
+
 
     public synchronized void removeAgent(String agentId) {
         agentPositions.remove(agentId);
@@ -70,6 +83,7 @@ public class GridEnvironment {
         // Check for agent in the cell
         for (Map.Entry<String, int[]> entry : agentPositions.entrySet()) {
             String otherId = entry.getKey();
+            if (otherId.startsWith("FireSensor")) continue;
             if (otherId.equals(agentId)) continue; // ignore self Id
             int[] pos = entry.getValue();
             if (pos[0] == toX && pos[1] == toY) {
@@ -109,6 +123,20 @@ public class GridEnvironment {
         return height;
     }
 
+    public synchronized boolean hasImmovableAgentAt(int x, int y) {
+        for (Map.Entry<String, int[]> entry : agentPositions.entrySet()) {
+            String id = entry.getKey();
+            int[] pos = entry.getValue();
+            if (pos[0] == x && pos[1] == y) {
+                EvacueeAgent agent = agentInstances.get(id);
+                if (agent != null && !agent.isStuck()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Computes the minimum number of steps from each cell to the nearest exit.
      * Returns a 2D array dist[x][y] = distance in steps to the closest exit.
@@ -135,6 +163,7 @@ public class GridEnvironment {
                 int nx = cx + d[0], ny = cy + d[1];
                 if (nx >= 0 && ny >= 0 && nx < width && ny < height
                         && !grid[nx][ny].isBlocked()
+                        && !hasImmovableAgentAt(nx, ny)
                         && dist[nx][ny] > cd + 1) {
                     dist[nx][ny] = cd + 1;
                     queue.addLast(new int[]{nx, ny});
