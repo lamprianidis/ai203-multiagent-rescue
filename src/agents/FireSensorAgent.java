@@ -54,7 +54,7 @@ public class FireSensorAgent extends Agent {
             int dist = Math.abs(fireX - x) + Math.abs(fireY - y);
             if (dist <= range) {
                 ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                msg.addReceiver(new AID("AnnouncerAgent", AID.ISLOCALNAME));
+                msg.addReceiver(new AID("Announcer", AID.ISLOCALNAME));
                 msg.setContent("FIRE DETECTED at " + fireX + "," + fireY + "!");
                 send(msg);
                 MessageLogger.logMessage(msg);
