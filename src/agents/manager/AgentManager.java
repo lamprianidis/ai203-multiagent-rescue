@@ -139,6 +139,7 @@ public class AgentManager {
                 new Object[]{}
         );
         controller.start();
+        controllers.add(controller);
     }
 
     public static void killAll() {
