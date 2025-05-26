@@ -124,6 +124,29 @@ public class Main {
             ac.start();
         }
 
+        AgentController controller = container.createNewAgent(
+                "Announcer",
+                "agents.AnnouncerAgent",
+                new Object[]{}
+        );
+        controller.start();
+
+        for (int i = 0; i < 10; i++) {
+            int x, y;
+            do {
+                x = random.nextInt(width);
+                y = random.nextInt(height);
+            } while (env.getCell(x, y).isBlocked() ||
+                    env.getCell(x, y).getType() == Cell.CellType.EXIT);
+
+            AgentController ac = container.createNewAgent(
+                    "FireSensor" + i,
+                    "agents.FireSensorAgent",
+                    new Object[]{x,y}
+            );
+            ac.start();
+        }
+
         SimulationView.setEnvironment(env);
         Application.launch(SimulationView.class, args);
     }
