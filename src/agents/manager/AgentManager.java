@@ -18,6 +18,10 @@ public class AgentManager {
         container = ac;
     }
 
+    public static void register(AgentController ac){
+        controllers.add(ac);
+    }
+
     public static void spawnAll(AgentSettings settings) throws StaleProxyException {
         controllers.clear();
         GridEnvironment env = EnvironmentHolder.getEnvironment();
@@ -39,7 +43,7 @@ public class AgentManager {
                     new Object[]{x, y}
             );
             ac.start();
-            controllers.add(ac);
+            register(ac);
         }
 
         // Panicked evacuees
@@ -57,7 +61,7 @@ public class AgentManager {
                     new Object[]{x, y}
             );
             ac.start();
-            controllers.add(ac);
+            register(ac);
         }
 
         // Injured evacuees
@@ -75,7 +79,7 @@ public class AgentManager {
                     new Object[]{x, y}
             );
             ac.start();
-            controllers.add(ac);
+            register(ac);
         }
 
         // Fireplace agents
@@ -93,7 +97,7 @@ public class AgentManager {
                     new Object[]{x, y, 1}
             );
             fire.start();
-            controllers.add(fire);
+            register(fire);
         }
 
         // Firefighter agents
@@ -111,7 +115,7 @@ public class AgentManager {
                     new Object[]{x, y}
             );
             ac.start();
-            controllers.add(ac);
+            register(ac);
         }
 
         // FireSensor agents
@@ -129,7 +133,7 @@ public class AgentManager {
                     new Object[]{x,y}
             );
             ac.start();
-            controllers.add(ac);
+            register(ac);
         }
 
         // Announcer agent
@@ -139,7 +143,7 @@ public class AgentManager {
                 new Object[]{}
         );
         controller.start();
-        controllers.add(controller);
+        register(controller);
     }
 
     public static void killAll() {
