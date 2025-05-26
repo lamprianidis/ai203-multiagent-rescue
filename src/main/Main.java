@@ -6,7 +6,6 @@ import environment.EnvironmentFactory;
 import environment.EnvironmentHolder;
 import environment.GridEnvironment;
 import gui.SimulationView;
-import jade.wrapper.StaleProxyException;
 import javafx.application.Application;
 import jade.core.Runtime;
 import jade.core.ProfileImpl;
@@ -31,14 +30,7 @@ public class Main {
         settings.firefighterCount = 5;
         settings.fireSensorCount = 10;
 
-        try {
-            AgentManager.spawnAll(settings);
-        } catch (StaleProxyException e) {
-            e.printStackTrace();
-            System.err.println("Failed to spawn agents.");
-            System.exit(2);
-        }
-
+        SimulationView.setAgentSettings(settings);
         SimulationView.setEnvironment(env);
         Application.launch(SimulationView.class, args);
     }

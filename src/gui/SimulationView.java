@@ -1,38 +1,64 @@
 package gui;
 
 import agents.EvacueeAgent;
-import environment.Cell;
-import environment.GridEnvironment;
+import agents.manager.AgentManager;
+import agents.manager.AgentSettings;
+import jade.wrapper.StaleProxyException;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import environment.Cell;
+import environment.GridEnvironment;
 
 public class SimulationView extends Application {
     private static GridEnvironment env;
+    private static AgentSettings settings;
+
     private Canvas canvas;
     private long simulationStartTime;
+    private AnimationTimer timer;
     private static final long maxDuration = 30_000; // 30 sec
 
     public static void setEnvironment(GridEnvironment environment) {
         env = environment;
     }
 
+    public static void setAgentSettings(AgentSettings agentSettings) {
+        settings = agentSettings;
+    }
+
     @Override
     public void start(Stage stage) {
         canvas = new Canvas(1200, 900);
-        StackPane root = new StackPane(canvas);
+
+        Label controlsLabel = new Label("Simulation Controls");
+        controlsLabel.setStyle("-fx-font-weight: bold");
+
+        Button startBtn = new Button("Start Simulation");
+        VBox leftPane = new VBox(10, controlsLabel, startBtn);
+        leftPane.setPadding(new Insets(10));
+
+        BorderPane root = new BorderPane();
+        root.setCenter(canvas);
+        root.setLeft(leftPane);
+
         stage.setScene(new Scene(root));
         stage.setTitle("Evacuation Simulation");
         stage.show();
 
         simulationStartTime = System.currentTimeMillis();
 
-        new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 long elapsed = System.currentTimeMillis() - simulationStartTime;
@@ -53,7 +79,20 @@ public class SimulationView extends Application {
                 drawGrid();
                 drawAgents();
             }
-        }.start();
+        };
+
+        startBtn.setOnAction(evt -> {
+            AgentManager.killAll();
+            try {
+                AgentManager.spawnAll(settings);
+            } catch (StaleProxyException e) {
+                e.printStackTrace();
+                return;
+            }
+            simulationStartTime = System.currentTimeMillis();
+            timer.start();
+            startBtn.setText("Restart Simulation");
+        });
     }
 
     private void drawGrid() {
