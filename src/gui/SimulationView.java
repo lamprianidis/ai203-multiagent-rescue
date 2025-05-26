@@ -1,5 +1,7 @@
 package gui;
 
+import javafx.application.Platform;
+import javafx.scene.control.TextArea;
 import agents.EvacueeAgent;
 import agents.manager.AgentManager;
 import agents.manager.AgentSettings;
@@ -29,6 +31,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 public class SimulationView extends Application {
     private static GridEnvironment env;
@@ -143,9 +148,23 @@ public class SimulationView extends Application {
         );
         leftPane.setPadding(new Insets(10));
 
+        TextArea consoleArea = getConsoleArea();
+
+        BorderPane.setMargin(consoleArea, new Insets(5));
+
+        PrintStream ps = new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) {
+                Platform.runLater(() -> consoleArea.appendText(String.valueOf((char) b)));
+            }
+        });
+        System.setOut(ps);
+        System.setErr(ps);
+
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
         root.setLeft(leftPane);
+        root.setBottom(consoleArea);
 
         stage.setScene(new Scene(root));
         stage.setTitle("Evacuation Simulation");
@@ -200,6 +219,24 @@ public class SimulationView extends Application {
             timer.start();
             startBtn.setText("Restart Simulation");
         });
+    }
+
+    private static TextArea getConsoleArea() {
+        TextArea consoleArea = new TextArea();
+        consoleArea.setWrapText(true);
+        consoleArea.setPrefRowCount(8);
+        consoleArea.setPrefHeight(180);
+        consoleArea.setStyle("""
+            -fx-border-color: #444444;
+            -fx-border-width: 1;
+            -fx-background-color: black;
+            -fx-control-inner-background: #2B2B2B;
+            -fx-text-fill: #D4D4D4;;
+            -fx-font-family: 'Consolas', monospace;
+            -fx-font-size: 13;
+        """);
+        consoleArea.setText("Simulation Console\n\n[ Press “Start Simulation” to begin... ]");
+        return consoleArea;
     }
 
     private void drawGrid() {
