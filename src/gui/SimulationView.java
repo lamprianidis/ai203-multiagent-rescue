@@ -90,7 +90,7 @@ public class SimulationView extends Application {
 
     @Override
     public void start(Stage stage) {
-        canvas = new Canvas(1200, 900);
+        canvas = new Canvas(1000, 750);
 
         Label controlsLabel = new Label("Simulation Controls");
         controlsLabel.setStyle("-fx-font-weight: bold");
