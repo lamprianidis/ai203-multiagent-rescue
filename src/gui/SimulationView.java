@@ -3,6 +3,8 @@ package gui;
 import agents.EvacueeAgent;
 import agents.manager.AgentManager;
 import agents.manager.AgentSettings;
+import environment.EnvironmentFactory;
+import environment.EnvironmentHolder;
 import jade.wrapper.StaleProxyException;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -82,6 +84,10 @@ public class SimulationView extends Application {
         };
 
         startBtn.setOnAction(evt -> {
+            GridEnvironment freshEnv = EnvironmentFactory.buildOfficeEnvironment();
+            EnvironmentHolder.setEnvironment(freshEnv);
+            SimulationView.setEnvironment(freshEnv);
+
             AgentManager.killAll();
             try {
                 AgentManager.spawnAll(settings);
@@ -89,6 +95,7 @@ public class SimulationView extends Application {
                 e.printStackTrace();
                 return;
             }
+
             simulationStartTime = System.currentTimeMillis();
             timer.start();
             startBtn.setText("Restart Simulation");
