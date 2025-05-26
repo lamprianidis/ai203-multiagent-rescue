@@ -7,6 +7,7 @@ public class AgentSettings {
     public int firefighterCount;
     public int fireSensorCount;
     public int fireplaceCount;
+    public int rescuerCount;
 
     public AgentSettings() {
         this.calmCount = 0;
@@ -15,5 +16,6 @@ public class AgentSettings {
         this.firefighterCount = 0;
         this.fireSensorCount = 0;
         this.fireplaceCount = 0;
+        this.rescuerCount = 0;
     }
 }

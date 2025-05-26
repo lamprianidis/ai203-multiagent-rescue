@@ -30,6 +30,7 @@ public class Main {
         settings.fireplaceCount = 3;
         settings.firefighterCount = 5;
         settings.fireSensorCount = 10;
+        settings.rescuerCount = 2;
 
         try {
             AgentManager.spawnAll(settings);
@@ -38,7 +39,7 @@ public class Main {
             System.err.println("Failed to spawn agents.");
             System.exit(2);
         }
-
+        
         SimulationView.setEnvironment(env);
         Application.launch(SimulationView.class, args);
     }
