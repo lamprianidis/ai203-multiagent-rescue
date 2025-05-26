@@ -6,11 +6,11 @@ import jade.wrapper.AgentController;
 import environment.Cell;
 import environment.EnvironmentHolder;
 import environment.GridEnvironment;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import static agents.manager.AgentManager.register;
 
 public class FireplaceAgent extends Agent {
     private String agentId;
@@ -68,6 +68,7 @@ public class FireplaceAgent extends Agent {
                         new Object[]{nx, ny, severity}
                 );
                 newFire.start();
+                register(newFire);
             } catch (Exception e) {
                 e.printStackTrace();
             }
