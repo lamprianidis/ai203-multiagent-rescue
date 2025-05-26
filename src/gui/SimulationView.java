@@ -1,5 +1,7 @@
 package gui;
 
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 import agents.EvacueeAgent;
@@ -135,6 +137,21 @@ public class SimulationView extends Application {
         HBox fireRow = new HBox(8, fireLbl, fireSp);
         fireRow.setAlignment(Pos.CENTER_LEFT);
 
+        Text calmLabelText = new Text("Calm: ");
+        calmLabelText.setFill(Color.BLUE);
+        Text calmCountText = new Text("0 / " + settings.calmCount);
+        TextFlow calmFlow   = new TextFlow(calmLabelText, calmCountText);
+
+        Text panickedLabelText = new Text("Panicked: ");
+        panickedLabelText.setFill(Color.ORANGE);
+        Text panickedCountText = new Text("0 / " + settings.panickedCount);
+        TextFlow panickedFlow   = new TextFlow(panickedLabelText, panickedCountText);
+
+        Text injuredLabelText = new Text("Injured: ");
+        injuredLabelText.setFill(Color.RED);
+        Text injuredCountText = new Text("0 / " + settings.injuredCount);
+        TextFlow injuredFlow   = new TextFlow(injuredLabelText, injuredCountText);
+
         Button startBtn = new Button("Start Simulation");
         VBox leftPane = new VBox(10,
                 controlsLabel,
@@ -144,6 +161,9 @@ public class SimulationView extends Application {
                 firefighterRow,
                 sensorRow,
                 fireRow,
+                calmFlow,
+                panickedFlow,
+                injuredFlow,
                 startBtn
         );
         leftPane.setPadding(new Insets(10));
@@ -189,6 +209,16 @@ public class SimulationView extends Application {
                     System.out.println("Simulation ended: fire extinguished.");
                     System.exit(0);
                 }
+
+                calmCountText.setText(
+                        env.getEvacuatedCount(EvacueeAgent.Type.CALM) + " / " + settings.calmCount
+                );
+                panickedCountText.setText(
+                        env.getEvacuatedCount(EvacueeAgent.Type.PANICKED) + " / " + settings.panickedCount
+                );
+                injuredCountText.setText(
+                        env.getEvacuatedCount(EvacueeAgent.Type.INJURED) + " / " + settings.injuredCount
+                );
 
                 drawGrid();
                 drawAgents();
