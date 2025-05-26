@@ -3,24 +3,32 @@ package gui;
 import agents.EvacueeAgent;
 import agents.manager.AgentManager;
 import agents.manager.AgentSettings;
+import environment.Cell;
 import environment.EnvironmentFactory;
 import environment.EnvironmentHolder;
+import environment.GridEnvironment;
 import jade.wrapper.StaleProxyException;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import environment.Cell;
-import environment.GridEnvironment;
 
 public class SimulationView extends Application {
     private static GridEnvironment env;
@@ -39,6 +47,40 @@ public class SimulationView extends Application {
         settings = agentSettings;
     }
 
+    private enum ShapeType { CALM, PANICKED, INJURED, FIREFIGHTER, FIRESENSOR, FIREPLACE }
+
+    private Node makeIcon(ShapeType type) {
+        switch (type) {
+            case CALM:
+                return new Circle(6, Color.BLUE);
+            case PANICKED:
+                return new Circle(6, Color.ORANGE);
+            case INJURED:
+                return new Circle(6, Color.RED);
+            case FIREFIGHTER:
+                Polygon tri = new Polygon(0.0, 8.0, 8.0, 8.0, 4.0, 0.0);
+                tri.setFill(Color.GOLD);
+                return tri;
+            case FIRESENSOR:
+                return new Rectangle(12, 12, Color.HOTPINK);
+            case FIREPLACE:
+                return new Rectangle(12, 12, Color.DARKRED);
+            default:
+                return new Rectangle(0, 0);
+        }
+    }
+
+    private Spinner<Integer> makeSpinner(int initial) {
+        Spinner<Integer> sp = new Spinner<>();
+        sp.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 400, initial, 1)
+        );
+        sp.setEditable(true);
+        sp.setPrefWidth(60);
+        sp.getEditor().setPrefColumnCount(3);
+        return sp;
+    }
+
     @Override
     public void start(Stage stage) {
         canvas = new Canvas(1200, 900);
@@ -46,8 +88,59 @@ public class SimulationView extends Application {
         Label controlsLabel = new Label("Simulation Controls");
         controlsLabel.setStyle("-fx-font-weight: bold");
 
+        Spinner<Integer> calmSp = makeSpinner(settings.calmCount);
+        Label calmLbl = new Label("Calm evacuees:");
+        calmLbl.setGraphic(makeIcon(ShapeType.CALM));
+        calmLbl.setContentDisplay(ContentDisplay.LEFT);
+        HBox calmRow = new HBox(8, calmLbl, calmSp);
+        calmRow.setAlignment(Pos.CENTER_LEFT);
+
+        Spinner<Integer> panickedSp = makeSpinner(settings.panickedCount);
+        Label panickedLbl = new Label("Panicked evacuees:");
+        panickedLbl.setGraphic(makeIcon(ShapeType.PANICKED));
+        panickedLbl.setContentDisplay(ContentDisplay.LEFT);
+        HBox panickedRow = new HBox(8, panickedLbl, panickedSp);
+        panickedRow.setAlignment(Pos.CENTER_LEFT);
+
+        Spinner<Integer> injuredSp = makeSpinner(settings.injuredCount);
+        Label injuredLbl = new Label("Injured evacuees:");
+        injuredLbl.setGraphic(makeIcon(ShapeType.INJURED));
+        injuredLbl.setContentDisplay(ContentDisplay.LEFT);
+        HBox injuredRow = new HBox(8, injuredLbl, injuredSp);
+        injuredRow.setAlignment(Pos.CENTER_LEFT);
+
+        Spinner<Integer> firefighterSp = makeSpinner(settings.firefighterCount);
+        Label firefighterLbl = new Label("Firefighters:");
+        firefighterLbl.setGraphic(makeIcon(ShapeType.FIREFIGHTER));
+        firefighterLbl.setContentDisplay(ContentDisplay.LEFT);
+        HBox firefighterRow = new HBox(8, firefighterLbl, firefighterSp);
+        firefighterRow.setAlignment(Pos.CENTER_LEFT);
+
+        Spinner<Integer> sensorSp = makeSpinner(settings.fireSensorCount);
+        Label sensorLbl = new Label("Fire sensors:");
+        sensorLbl.setGraphic(makeIcon(ShapeType.FIRESENSOR));
+        sensorLbl.setContentDisplay(ContentDisplay.LEFT);
+        HBox sensorRow = new HBox(8, sensorLbl, sensorSp);
+        sensorRow.setAlignment(Pos.CENTER_LEFT);
+
+        Spinner<Integer> fireSp = makeSpinner(settings.fireplaceCount);
+        Label fireLbl = new Label("Fireplaces:");
+        fireLbl.setGraphic(makeIcon(ShapeType.FIREPLACE));
+        fireLbl.setContentDisplay(ContentDisplay.LEFT);
+        HBox fireRow = new HBox(8, fireLbl, fireSp);
+        fireRow.setAlignment(Pos.CENTER_LEFT);
+
         Button startBtn = new Button("Start Simulation");
-        VBox leftPane = new VBox(10, controlsLabel, startBtn);
+        VBox leftPane = new VBox(10,
+                controlsLabel,
+                calmRow,
+                panickedRow,
+                injuredRow,
+                firefighterRow,
+                sensorRow,
+                fireRow,
+                startBtn
+        );
         leftPane.setPadding(new Insets(10));
 
         BorderPane root = new BorderPane();
@@ -84,6 +177,13 @@ public class SimulationView extends Application {
         };
 
         startBtn.setOnAction(evt -> {
+            settings.calmCount = calmSp.getValue();
+            settings.panickedCount = panickedSp.getValue();
+            settings.injuredCount = injuredSp.getValue();
+            settings.firefighterCount = firefighterSp.getValue();
+            settings.fireSensorCount = sensorSp.getValue();
+            settings.fireplaceCount = fireSp.getValue();
+
             GridEnvironment freshEnv = EnvironmentFactory.buildOfficeEnvironment();
             EnvironmentHolder.setEnvironment(freshEnv);
             SimulationView.setEnvironment(freshEnv);
