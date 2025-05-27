@@ -183,7 +183,7 @@ public class SimulationView extends Application {
         severityLbl.setGraphic(makeIcon(ShapeType.FIREPLACE));
         severityLbl.setContentDisplay(ContentDisplay.LEFT);
         HBox severityRow = new HBox(8, severityLbl, severitySp);
-        fireRow.setAlignment(Pos.CENTER_LEFT);
+        severityRow.setAlignment(Pos.CENTER_LEFT);
 
         Label evacuatedLabel = new Label("Evacuated");
         evacuatedLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
