@@ -44,7 +44,7 @@ public class SimulationView extends Application {
     private Canvas canvas;
     private long simulationStartTime;
     private AnimationTimer timer;
-    private static final long maxDuration = 30_000; // 30 sec
+    private static final long maxDuration = 60_000; // 30 sec
 
     public static void setEnvironment(GridEnvironment environment) {
         env = environment;
