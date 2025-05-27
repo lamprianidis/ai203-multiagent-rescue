@@ -81,4 +81,8 @@ public abstract class EvacueeAgent extends Agent {
     public static int getTotalDeaths() {
         return deathCount.get();
     }
+
+    public static void resetTotalDeaths() {
+        deathCount.set(0);
+    }
 }

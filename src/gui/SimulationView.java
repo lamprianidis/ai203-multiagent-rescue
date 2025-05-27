@@ -203,6 +203,11 @@ public class SimulationView extends Application {
         Text injuredCountText = new Text("0 / " + settings.injuredCount);
         TextFlow injuredFlow   = new TextFlow(injuredLabelText, injuredCountText);
 
+        Text deathLabel = new Text("Deaths: ");
+        deathLabel.setFill(Color.BLACK);
+        Text deathCountText = new Text("0");
+        TextFlow deathFlow = new TextFlow(deathLabel, deathCountText);
+
         Button startBtn = new Button("Start Simulation");
         VBox leftPane = new VBox(15,
                 mapBox,
@@ -219,7 +224,8 @@ public class SimulationView extends Application {
                 evacuatedLabel,
                 calmFlow,
                 panickedFlow,
-                injuredFlow
+                injuredFlow,
+                deathFlow
         );
         leftPane.setPadding(new Insets(10));
 
@@ -274,6 +280,7 @@ public class SimulationView extends Application {
                 injuredCountText.setText(
                         env.getEvacuatedCount(EvacueeAgent.Type.INJURED) + " / " + settings.injuredCount
                 );
+                deathCountText.setText(String.valueOf(EvacueeAgent.getTotalDeaths()));
 
                 drawGrid();
                 drawAgents();
@@ -289,6 +296,8 @@ public class SimulationView extends Application {
             settings.fireSensorCount = sensorSp.getValue();
             settings.fireplaceCount = fireSp.getValue();
             settings.fireSeverity = severitySp.getValue();
+
+            EvacueeAgent.resetTotalDeaths();
 
             String selected = mapCombo.getValue();
             if (selected == null) return;
