@@ -1,5 +1,10 @@
 package gui;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ComboBox;
+import environment.MapIO;
+import javafx.stage.Stage;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.application.Platform;
@@ -32,7 +37,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -102,6 +106,25 @@ public class SimulationView extends Application {
     @Override
     public void start(Stage stage) {
         canvas = new Canvas(1000, 750);
+
+        Label mapLabel = new Label("Map");
+        mapLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        ObservableList<String> mapNames = FXCollections.observableArrayList(MapIO.listSavedMapNames());
+        ComboBox<String> mapCombo = new ComboBox<>(mapNames);
+        mapCombo.getSelectionModel().selectFirst();
+
+        Button loadMapBtn = new Button("Load");
+        Button editMapBtn = new Button("Edit");
+        HBox mapButtons = new HBox(5, loadMapBtn, editMapBtn);
+        mapButtons.setAlignment(Pos.CENTER_LEFT);
+        VBox mapBox = new VBox(5, mapLabel, mapCombo, mapButtons);
+        mapBox.setPadding(new Insets(5));
+
+        GridEnvironment defaultEnv = EnvironmentFactory.buildOfficeEnvironment();
+        EnvironmentHolder.setEnvironment(defaultEnv);
+        SimulationView.setEnvironment(defaultEnv);
+        drawGrid();
+        drawAgents();
 
         Label agentsLabel = new Label("Agents");
         agentsLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
@@ -182,6 +205,7 @@ public class SimulationView extends Application {
 
         Button startBtn = new Button("Start Simulation");
         VBox leftPane = new VBox(15,
+                mapBox,
                 agentsLabel,
                 calmRow,
                 panickedRow,
@@ -266,9 +290,12 @@ public class SimulationView extends Application {
             settings.fireplaceCount = fireSp.getValue();
             settings.fireSeverity = severitySp.getValue();
 
-            GridEnvironment freshEnv = EnvironmentFactory.buildOfficeEnvironment();
-            EnvironmentHolder.setEnvironment(freshEnv);
-            SimulationView.setEnvironment(freshEnv);
+            String selected = mapCombo.getValue();
+            if (selected == null) return;
+
+            GridEnvironment newEnv = MapIO.loadMap(selected);
+            EnvironmentHolder.setEnvironment(newEnv);
+            SimulationView.setEnvironment(newEnv);
 
             AgentManager.killAll();
             try {
@@ -279,8 +306,43 @@ public class SimulationView extends Application {
             }
 
             simulationStartTime = System.currentTimeMillis();
+            timer.stop();
             timer.start();
+
             startBtn.setText("Restart Simulation");
+        });
+
+        loadMapBtn.setOnAction(evt -> {
+            timer.stop();
+            startBtn.setText("Start Simulation");
+
+            AgentManager.killAll();
+
+            String selected = mapCombo.getValue();
+            if (selected == null) return;
+
+            GridEnvironment newEnv = MapIO.loadMap(selected);
+            EnvironmentHolder.setEnvironment(newEnv);
+            SimulationView.setEnvironment(newEnv);
+
+            drawGrid();
+            drawAgents();
+
+            simulationStartTime = System.currentTimeMillis();
+        });
+
+        editMapBtn.setOnAction(evt -> {
+            String selected = mapCombo.getValue();
+            MapEditor editor = new MapEditor(selected);
+            editor.setOnSaved(name -> {
+                mapNames.setAll(MapIO.listSavedMapNames());
+                mapCombo.getSelectionModel().select(name);
+            });
+            try {
+                editor.start(new Stage());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         });
     }
 
