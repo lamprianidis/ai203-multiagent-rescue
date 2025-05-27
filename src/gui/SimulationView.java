@@ -92,8 +92,8 @@ public class SimulationView extends Application {
     public void start(Stage stage) {
         canvas = new Canvas(1000, 750);
 
-        Label controlsLabel = new Label("Simulation Controls");
-        controlsLabel.setStyle("-fx-font-weight: bold");
+        Label agentsLabel = new Label("Agents");
+        agentsLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
         Spinner<Integer> calmSp = makeSpinner(settings.calmCount);
         Label calmLbl = new Label("Calm evacuees:");
@@ -137,6 +137,9 @@ public class SimulationView extends Application {
         HBox fireRow = new HBox(8, fireLbl, fireSp);
         fireRow.setAlignment(Pos.CENTER_LEFT);
 
+        Label evacuatedLabel = new Label("Evacuated");
+        evacuatedLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
         Text calmLabelText = new Text("Calm: ");
         calmLabelText.setFill(Color.BLUE);
         Text calmCountText = new Text("0 / " + settings.calmCount);
@@ -153,18 +156,19 @@ public class SimulationView extends Application {
         TextFlow injuredFlow   = new TextFlow(injuredLabelText, injuredCountText);
 
         Button startBtn = new Button("Start Simulation");
-        VBox leftPane = new VBox(10,
-                controlsLabel,
+        VBox leftPane = new VBox(15,
+                agentsLabel,
                 calmRow,
                 panickedRow,
                 injuredRow,
                 firefighterRow,
                 sensorRow,
                 fireRow,
+                startBtn,
+                evacuatedLabel,
                 calmFlow,
                 panickedFlow,
-                injuredFlow,
-                startBtn
+                injuredFlow
         );
         leftPane.setPadding(new Insets(10));
 
