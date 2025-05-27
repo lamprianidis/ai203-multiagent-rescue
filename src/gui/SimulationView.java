@@ -137,6 +137,13 @@ public class SimulationView extends Application {
         HBox fireRow = new HBox(8, fireLbl, fireSp);
         fireRow.setAlignment(Pos.CENTER_LEFT);
 
+        Spinner<Integer> severitySp = makeSpinner(settings.fireSeverity);
+        Label severityLbl = new Label("Fire severity:");
+        severityLbl.setGraphic(makeIcon(ShapeType.FIREPLACE));
+        severityLbl.setContentDisplay(ContentDisplay.LEFT);
+        HBox severityRow = new HBox(8, severityLbl, severitySp);
+        fireRow.setAlignment(Pos.CENTER_LEFT);
+
         Label evacuatedLabel = new Label("Evacuated");
         evacuatedLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
@@ -164,6 +171,7 @@ public class SimulationView extends Application {
                 firefighterRow,
                 sensorRow,
                 fireRow,
+                severityRow,
                 startBtn,
                 evacuatedLabel,
                 calmFlow,
@@ -236,6 +244,7 @@ public class SimulationView extends Application {
             settings.firefighterCount = firefighterSp.getValue();
             settings.fireSensorCount = sensorSp.getValue();
             settings.fireplaceCount = fireSp.getValue();
+            settings.fireSeverity = severitySp.getValue();
 
             GridEnvironment freshEnv = EnvironmentFactory.buildOfficeEnvironment();
             EnvironmentHolder.setEnvironment(freshEnv);
