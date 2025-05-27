@@ -54,7 +54,7 @@ public class SimulationView extends Application {
         settings = agentSettings;
     }
 
-    private enum ShapeType { CALM, PANICKED, INJURED, FIREFIGHTER, FIRESENSOR, FIREPLACE }
+    private enum ShapeType { CALM, PANICKED, INJURED, FIREFIGHTER, RESCUER, FIRESENSOR, FIREPLACE }
 
     private Node makeIcon(ShapeType type) {
         switch (type) {
@@ -68,6 +68,17 @@ public class SimulationView extends Application {
                 Polygon tri = new Polygon(0.0, 8.0, 8.0, 8.0, 4.0, 0.0);
                 tri.setFill(Color.GOLD);
                 return tri;
+            case RESCUER:
+                Canvas icon = new Canvas(12, 12);
+                GraphicsContext igc = icon.getGraphicsContext2D();
+                igc.setStroke(Color.GREEN);
+                igc.setLineWidth(2);
+                double cx = icon.getWidth() * 0.5;
+                double cy = icon.getHeight() * 0.5;
+                double size = Math.min(icon.getWidth(), icon.getHeight()) * 0.3;
+                igc.strokeLine(cx - size, cy, cx + size, cy);
+                igc.strokeLine(cx, cy - size, cx, cy + size);
+                return icon;
             case FIRESENSOR:
                 return new Rectangle(12, 12, Color.HOTPINK);
             case FIREPLACE:
@@ -123,6 +134,13 @@ public class SimulationView extends Application {
         HBox firefighterRow = new HBox(8, firefighterLbl, firefighterSp);
         firefighterRow.setAlignment(Pos.CENTER_LEFT);
 
+        Spinner<Integer> rescuerSp = makeSpinner(settings.rescuerCount);
+        Label rescuerLbl = new Label("Rescuers:");
+        rescuerLbl.setGraphic(makeIcon(ShapeType.RESCUER));
+        rescuerLbl.setContentDisplay(ContentDisplay.LEFT);
+        HBox rescuerRow = new HBox(8, rescuerLbl, rescuerSp);
+        rescuerRow.setAlignment(Pos.CENTER_LEFT);
+
         Spinner<Integer> sensorSp = makeSpinner(settings.fireSensorCount);
         Label sensorLbl = new Label("Fire sensors:");
         sensorLbl.setGraphic(makeIcon(ShapeType.FIRESENSOR));
@@ -169,6 +187,7 @@ public class SimulationView extends Application {
                 panickedRow,
                 injuredRow,
                 firefighterRow,
+                rescuerRow,
                 sensorRow,
                 fireRow,
                 severityRow,
@@ -242,6 +261,7 @@ public class SimulationView extends Application {
             settings.panickedCount = panickedSp.getValue();
             settings.injuredCount = injuredSp.getValue();
             settings.firefighterCount = firefighterSp.getValue();
+            settings.rescuerCount = rescuerSp.getValue();
             settings.fireSensorCount = sensorSp.getValue();
             settings.fireplaceCount = fireSp.getValue();
             settings.fireSeverity = severitySp.getValue();
