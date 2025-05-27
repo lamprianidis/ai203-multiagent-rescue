@@ -171,4 +171,16 @@ public class AgentManager {
         }
         controllers.clear();
     }
+
+    public static void suspendAll() {
+        for (AgentController ac : controllers) {
+            try { ac.suspend(); } catch (Exception ignored) {}
+        }
+    }
+
+    public static void resumeAll() {
+        for (AgentController ac : controllers) {
+            try { ac.activate(); } catch (Exception ignored) {}
+        }
+    }
 }
