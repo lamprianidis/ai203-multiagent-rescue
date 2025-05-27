@@ -94,7 +94,7 @@ public class AgentManager {
             AgentController fire = container.createNewAgent(
                     "Fireplace" + i,
                     "agents.FireplaceAgent",
-                    new Object[]{x, y, 1}
+                    new Object[]{x, y, settings.fireSeverity}
             );
             fire.start();
             register(fire);

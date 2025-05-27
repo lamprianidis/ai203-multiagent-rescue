@@ -30,6 +30,7 @@ public class Main {
         settings.firefighterCount = 5;
         settings.fireSensorCount = 10;
         settings.rescuerCount = 2;
+        settings.fireSeverity = 3;
 
         SimulationView.setAgentSettings(settings);
         SimulationView.setEnvironment(env);
