@@ -150,7 +150,7 @@ public class AgentManager {
                     new Object[]{x, y}
             );
             ac.start();
-            controllers.add(ac);
+            register(ac);
         }
 
         // Announcer agent
