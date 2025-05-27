@@ -2,13 +2,12 @@ package gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 import environment.MapIO;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.application.Platform;
-import javafx.scene.control.TextArea;
 import agents.EvacueeAgent;
 import agents.manager.AgentManager;
 import agents.manager.AgentSettings;
@@ -25,11 +24,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -209,6 +203,11 @@ public class SimulationView extends Application {
         TextFlow deathFlow = new TextFlow(deathLabel, deathCountText);
 
         Button startBtn = new Button("Start Simulation");
+        ToggleButton pauseBtn = new ToggleButton("Pause");
+
+        HBox controlRow = new HBox(8, startBtn, pauseBtn);
+        controlRow.setAlignment(Pos.CENTER_LEFT);
+
         VBox leftPane = new VBox(15,
                 mapBox,
                 agentsLabel,
@@ -220,7 +219,7 @@ public class SimulationView extends Application {
                 sensorRow,
                 fireRow,
                 severityRow,
-                startBtn,
+                controlRow,
                 evacuatedLabel,
                 calmFlow,
                 panickedFlow,
@@ -319,6 +318,18 @@ public class SimulationView extends Application {
             timer.start();
 
             startBtn.setText("Restart Simulation");
+        });
+
+        pauseBtn.setOnAction(evt -> {
+            if (pauseBtn.isSelected()) {
+                timer.stop();
+                AgentManager.suspendAll();
+                pauseBtn.setText("Resume");
+            } else {
+                AgentManager.resumeAll();
+                timer.start();
+                pauseBtn.setText("Pause");
+            }
         });
 
         loadMapBtn.setOnAction(evt -> {
