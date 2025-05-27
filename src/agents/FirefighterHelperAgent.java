@@ -8,7 +8,7 @@ import jade.core.behaviours.TickerBehaviour;
 
 import java.util.*;
 
-public class FirefighterAgent extends Agent {
+public class FirefighterHelperAgent extends Agent {
     private String agentId;
     private GridEnvironment env;
     private int x, y;

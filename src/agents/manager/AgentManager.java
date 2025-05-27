@@ -111,7 +111,7 @@ public class AgentManager {
 
             AgentController ac = container.createNewAgent(
                     "Firefighter" + i,
-                    "agents.FirefighterAgent",
+                    "agents.FirefighterHelperAgent",
                     new Object[]{x, y}
             );
             ac.start();
@@ -134,6 +134,23 @@ public class AgentManager {
             );
             ac.start();
             register(ac);
+        }
+
+        // Rescuer agents
+        for (int i = 0; i < settings.rescuerCount; i++) {
+            int x, y;
+            do {
+                x = random.nextInt(width);
+                y = random.nextInt(height);
+            } while (env.getCell(x, y).isBlocked());
+
+            AgentController ac = container.createNewAgent(
+                    "Rescuer" + i,
+                    "agents.RescuerHelperAgent",
+                    new Object[]{x, y}
+            );
+            ac.start();
+            controllers.add(ac);
         }
 
         // Announcer agent
