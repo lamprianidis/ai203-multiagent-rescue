@@ -7,6 +7,7 @@ import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -119,18 +120,24 @@ public class AgentManager {
         }
 
         // FireSensor agents
+        List<int[]> wallCells = new ArrayList<>();
+        for (int x = 0; x < env.getWidth(); x++) {
+            for (int y = 0; y < env.getHeight(); y++) {
+                if (env.getCell(x, y).getType() == Cell.CellType.WALL) {
+                    wallCells.add(new int[]{x, y});
+                }
+            }
+        }
+        wallCells.sort(Comparator.comparingInt(coords -> coords[0] + coords[1]));
+        int totalWalls = wallCells.size();
         for (int i = 0; i < settings.fireSensorCount; i++) {
-            int x, y;
-            do {
-                x = random.nextInt(width);
-                y = random.nextInt(height);
-            } while (env.getCell(x, y).isBlocked() ||
-                    env.getCell(x, y).getType() == Cell.CellType.EXIT);
-
+            int wallIndex = (int)((long)i * totalWalls / settings.fireSensorCount);
+            int[] wallPosition = wallCells.get(wallIndex);
+            int spawnX = wallPosition[0], spawnY = wallPosition[1];
             AgentController ac = container.createNewAgent(
                     "FireSensor" + i,
                     "agents.FireSensorAgent",
-                    new Object[]{x,y}
+                    new Object[]{spawnX, spawnY}
             );
             ac.start();
             register(ac);
