@@ -35,12 +35,16 @@ public class MapIO {
             MapData md = GSON.fromJson(fr, MapData.class);
             int W = md.grid.length, H = md.grid[0].length;
             GridEnvironment env = new GridEnvironment(W, H);
+            int exitId = 0;
             for (int x = 0; x < W; x++) {
                 for (int y = 0; y < H; y++) {
                     switch (md.grid[x][y]) {
                         case WALL -> env.defineWall(x, y);
                         case OBSTACLE -> env.defineObstacle(x, y);
-                        case EXIT -> env.defineExit(x, y, 0);
+                        case EXIT -> {
+                            env.defineExit(x, y, exitId);
+                            exitId++;
+                        }
                         default -> {}
                     }
                 }
