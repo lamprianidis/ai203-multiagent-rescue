@@ -262,12 +262,17 @@ public class SimulationView extends Application {
                     System.exit(0);
                 }
 
-                boolean anyFire = env.getAllAgentPositions().keySet().stream()
-                        .anyMatch(id -> id.startsWith("Fire"));
-                // No other fires exist
-                if (!anyFire) {
-                    System.out.println("Simulation ended: fire extinguished.");
-                    System.exit(0);
+                // Case 2: No fires remaining
+                // Wait 5 seconds for initial fire to spawn
+                if (elapsed > 5000) {
+                    boolean anyFire = env.getAllAgentPositions().keySet().stream()
+                            .anyMatch(id -> id.startsWith("Fire")
+                                    && id.length() > 4
+                                    && Character.isDigit(id.charAt(4)));
+                    if (!anyFire) {
+                        System.out.println("Simulation ended: fire extinguished.");
+                        System.exit(0);
+                    }
                 }
 
                 calmCountText.setText(
