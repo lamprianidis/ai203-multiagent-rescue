@@ -31,11 +31,10 @@ public class FirefighterHelperAgent extends Agent {
         });
     }
 
-    private void act() {
+    protected void act() {
         // Put out fire in neighbor cells
         for (int[] n : getNeighbors()) {
             int nx = n[0], ny = n[1];
-
             if (env.getCell(nx, ny).getType() == Cell.CellType.OBSTACLE) {
                 env.getCell(nx, ny).setType(Cell.CellType.FREE);
 
@@ -54,23 +53,15 @@ public class FirefighterHelperAgent extends Agent {
                         break;
                     }
                 }
-
+                // Skip movement after extinguishing
                 return;
             }
         }
 
-        // Find the closest fireplace
-        int[] target = findClosestFire();
-        if (target == null) {
-            System.out.println(agentId + ": no more fire, terminating");
-            doDelete();
-            return;
-        }
-
-        // Move to the fireplace (greedy)
+        // Move to the closest fire
+        int[][] fireDist = env.computeDistanceToInjuredOrFire("fire");
         List<int[]> moves = getValidMoves();
-        moves.sort(Comparator.comparingInt(p ->
-                manhattan(p[0], p[1], target[0], target[1])));
+        moves.sort(Comparator.comparingInt(p -> fireDist[p[0]][p[1]]));
 
         for (int[] move : moves) {
             if (env.tryMoveAgent(agentId, move[0], move[1])) {
