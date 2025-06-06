@@ -305,7 +305,11 @@ public class SimulationView extends Application {
             EnvironmentHolder.setEnvironment(newEnv);
             SimulationView.setEnvironment(newEnv);
 
-            AgentManager.killAll();
+            try {
+                AgentManager.killAll();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             try {
                 AgentManager.spawnAll(settings);
             } catch (StaleProxyException e) {
@@ -336,7 +340,11 @@ public class SimulationView extends Application {
             timer.stop();
             startBtn.setText("Start Simulation");
 
-            AgentManager.killAll();
+            try {
+                AgentManager.killAll();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
             String selected = mapCombo.getValue();
             if (selected == null) return;
