@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class AgentManager {
     private static AgentContainer container;
@@ -170,23 +171,24 @@ public class AgentManager {
         register(controller);
     }
 
-    public static void killAll() {
-        for (AgentController ac : controllers) {
+    public static void killAll() throws InterruptedException {
+        for (AgentController ac : new ArrayList<>(controllers)) {
             try {
                 ac.kill();
             } catch (Exception ignored) { }
         }
+        TimeUnit.SECONDS.sleep(1);
         controllers.clear();
     }
 
     public static void suspendAll() {
-        for (AgentController ac : controllers) {
+        for (AgentController ac : new ArrayList<>(controllers)) {
             try { ac.suspend(); } catch (Exception ignored) {}
         }
     }
 
     public static void resumeAll() {
-        for (AgentController ac : controllers) {
+        for (AgentController ac : new ArrayList<>(controllers)) {
             try { ac.activate(); } catch (Exception ignored) {}
         }
     }
