@@ -1,8 +1,6 @@
 package environment;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import agents.EvacueeAgent;
 
 public class GridEnvironment {
@@ -184,43 +182,46 @@ public class GridEnvironment {
         int[][] dist = new int[width][height];
         // initialize distances to "infinite"
         for (int i = 0; i < width; i++) {
-            java.util.Arrays.fill(dist[i], Integer.MAX_VALUE);
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
         }
-        java.util.Deque<int[]> queue = new java.util.ArrayDeque<>();
-        for (Map.Entry<String, int[]> entry : agentPositions.entrySet()) {
-            String agentId = entry.getKey();
-            int[] pos = entry.getValue();
-            // Evacuee type
-            EvacueeAgent.Type type = agentTypes.get(agentId);
 
-            boolean isTarget = false;
-
-            if ("fire".equalsIgnoreCase(targetType)) {
-                isTarget = agentId.toLowerCase().startsWith("fire");
-            } else if ("injured".equalsIgnoreCase(targetType)) {
-                isTarget = (type != null && type == EvacueeAgent.Type.INJURED);
-            }
-
-            if (isTarget) {
-                int x = pos[0], y = pos[1];
-                dist[x][y] = 0;
-                queue.addLast(new int[]{x, y});
-            }
-
-            // explore in four directions
-            int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-            while (!queue.isEmpty()) {
-                int[] p = queue.removeFirst();
-                int cx = p[0], cy = p[1], cd = dist[cx][cy];
-                for (int[] d : dirs) {
-                    int nx = cx + d[0], ny = cy + d[1];
-                    if (nx >= 0 && ny >= 0 && nx < width && ny < height
-                            && !grid[nx][ny].isBlocked()
-                            && !hasImmovableAgentAt(nx, ny)
-                            && dist[nx][ny] > cd + 1) {
-                        dist[nx][ny] = cd + 1;
-                        queue.addLast(new int[]{nx, ny});
+        Deque<int[]> queue = new ArrayDeque<>();
+        if ("fire".equalsIgnoreCase(targetType)) {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    if (grid[i][j].getType() == Cell.CellType.OBSTACLE) {
+                        dist[i][j] = 0;
+                        queue.addLast(new int[]{i, j});
                     }
+                }
+            }
+        } else if ("injured".equalsIgnoreCase(targetType)) {
+            for (var entry : agentPositions.entrySet()) {
+                String id = entry.getKey();
+                EvacueeAgent.Type type = agentTypes.get(id);
+                if (type == EvacueeAgent.Type.INJURED) {
+                    int[] p = entry.getValue();
+                    dist[p[0]][p[1]] = 0;
+                    queue.addLast(new int[]{p[0], p[1]});
+                }
+            }
+        } else {
+            return dist;
+        }
+
+        // 3) explore in four directions
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        while (!queue.isEmpty()) {
+            int[] p = queue.removeFirst();
+            int cx = p[0], cy = p[1], cd = dist[cx][cy];
+            for (int[] d : dirs) {
+                int nx = cx + d[0], ny = cy + d[1];
+                if (nx >= 0 && ny >= 0 && nx < width && ny < height
+                        && !grid[nx][ny].isBlocked()
+                        && !hasImmovableAgentAt(nx, ny)
+                        && dist[nx][ny] > cd + 1) {
+                    dist[nx][ny] = cd + 1;
+                    queue.addLast(new int[]{nx, ny});
                 }
             }
         }
