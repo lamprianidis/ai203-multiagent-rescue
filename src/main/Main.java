@@ -23,13 +23,13 @@ public class Main {
         AgentManager.init(container);
 
         AgentSettings settings = new AgentSettings();
-        settings.calmCount = 100;
+        settings.calmCount = 110;
         settings.panickedCount = 15;
-        settings.injuredCount = 20;
+        settings.injuredCount = 15;
         settings.fireplaceCount = 4;
-        settings.firefighterCount = 10;
+        settings.firefighterCount = 12;
         settings.fireSensorCount = 8;
-        settings.rescuerCount = 10;
+        settings.rescuerCount = 8;
         settings.fireSeverity = 3;
 
         SimulationView.setAgentSettings(settings);
