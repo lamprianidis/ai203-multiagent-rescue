@@ -27,13 +27,19 @@ public final class MessageLogger {
     public static void logMessage(ACLMessage msg) {
         String sender = msg.getSender().getLocalName();
 
-        List<String> receivers = new ArrayList<>();
-        var iterator = msg.getAllReceiver();
-        while (iterator.hasNext()) {
-            AID aid = (AID) iterator.next();
-            receivers.add(aid.getLocalName());
+        String receiverList;
+        if (sender.startsWith("Announcer")){
+            receiverList = "All Evacuee Agents";
         }
-        String receiverList = String.join(",", receivers);
+        else {
+            List<String> receivers = new ArrayList<>();
+            var iterator = msg.getAllReceiver();
+            while (iterator.hasNext()) {
+                AID aid = (AID) iterator.next();
+                receivers.add(aid.getLocalName());
+            }
+            receiverList = String.join(",", receivers);
+        }
 
         String log = String.format(
                 "[%s -> %s] perf=%s, content=\"%s\"",

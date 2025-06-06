@@ -3,6 +3,7 @@ package agents;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import agents.manager.AgentManager;
 
 public class RescuerHelperAgent extends HelperAgent{
     private int[][] distMap;
@@ -95,6 +96,7 @@ public class RescuerHelperAgent extends HelperAgent{
                             new Object[]{pos2[0], pos2[1]}
                     );
                     calm.start();
+                    AgentManager.register(calm);
                     distMap = env.computeDistanceToInjuredOrFire("injured"); // Recompute distances for next injured
                 } catch (Exception e) {
                     e.printStackTrace();

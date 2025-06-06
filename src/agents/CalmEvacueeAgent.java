@@ -20,7 +20,7 @@ public class CalmEvacueeAgent extends EvacueeAgent {
     @Override
     protected void setup() {
         super.setup();
-        distMap = env.computeDistanceToExits();
+        distMap = env.getDistanceToEexits();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class CalmEvacueeAgent extends EvacueeAgent {
         }
 
         if (stuckCounter >= 2) {
-            distMap = env.computeDistanceToExits();
+            distMap = env.getDistanceToEexits();
         }
 
         List<int[]> validMoves = getValidMoves();
