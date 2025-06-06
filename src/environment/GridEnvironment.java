@@ -25,6 +25,8 @@ public class GridEnvironment {
         }
     }
 
+    public int[][] distanceToExits = computeDistanceToExits();
+
     public synchronized void defineWall(int x, int y) {
         grid[x][y].setType(Cell.CellType.WALL);
     }
@@ -36,6 +38,7 @@ public class GridEnvironment {
     public synchronized void defineExit(int x, int y, int exitId) {
         grid[x][y].setType(Cell.CellType.EXIT);
         exitPositions.put(exitId, new int[]{x, y});
+        distanceToExits = computeDistanceToExits();
     }
 
     public synchronized void addAgent(String agentId,
@@ -172,6 +175,10 @@ public class GridEnvironment {
             }
         }
         return dist;
+    }
+
+    public int[][] getDistanceToEexits(){
+        return distanceToExits;
     }
 
     /**
